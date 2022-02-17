@@ -18,11 +18,12 @@ def split_data_train_val():
     # Dataframe is concatenated again as the full dataset is needed and split again during cross validation. _val dataframes are needed for the final evaluation. 
     df = pd.concat([X_train, y_train],axis = 1)
 
+    # Naming
     df.name = 'df'
     X_val.name = 'X_val'
     y_val.name = 'y_val'
 
-    #Saving
+    # Saving
     save_files([df, X_val, y_val])
 
 
