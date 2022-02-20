@@ -57,7 +57,7 @@ services:
       - postgres-db-volume:/var/lib/postgresql/data
       - './data:/maindata' #this was added to mirror the data files into the postgres container. Only then, the much more efficient copy sql command can be used.
     ports:
-      - 5432:5432 #this was added Todo: remove comment
+      - 5432:5432
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s
@@ -202,6 +202,12 @@ services:
     build: .
     ports: 
       - 80:80
+    volumes:
+      - ./data:/app #todo: check whether this is needed
+      - ./app_dash:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
-  postgres-db-volume:
+  postgres-db-volume: #todo: Check why this is standing here
