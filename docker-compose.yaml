@@ -198,5 +198,10 @@ services:
       - -c
       - airflow
 
+  dash:
+    build: .
+    ports: 
+      - 80:80
+
 volumes:
   postgres-db-volume:
