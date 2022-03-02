@@ -23,18 +23,20 @@ results_from_db = pd.read_sql_table('results', con = engine)
 
 
 app= flask.Flask(__name__)
-dash_app = dash.Dash(__name__, server=app, external_stylesheets=[dbc.themes.BOOTSTRAP])
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+#dash_app = dash.Dash(__name__, server=app, external_stylesheets=[dbc.themes.BOOTSTRAP])
+dash_app = dash.Dash(__name__, server=app, external_stylesheets=external_stylesheets)
 dash_app.config.suppress_callback_exceptions = True
 
 dash_app.layout = html.Div(
     children=[
-        html.H1(children="FreeBirds Crew"),
-        html.Div(children="""Docker Conatiner Running DASH WebApp"""),
+        html.H1(children="Model Training Monitor"),
+        html.Div(children="""Displaying the PostgreSQL-data in a DASH WebApp"""),
         dcc.Graph(
             id="example-graph",
             figure={
                 "data": [
-                    {"x": [1, 2, 3], "y": [4, 1, 2], "type": "bar", "name": "Like"},
+                    {"x": [1, 2, 3], "y": [4, 15, 2], "type": "bar", "name": "Like"},
                     {
                         "x": [1, 2, 3],
                         "y": [2, 4, results_from_db.iloc[-1,-1]],
@@ -43,6 +45,21 @@ dash_app.layout = html.Div(
                     },
                 ],
                 "layout": {"title": "Like Vs Comment Dash Visualization"},
+            },
+        ),
+        dcc.Graph(
+            id="example-graph_2",
+            figure={
+                "data": [
+                    {"x": [1, 2, 3], "y": [4, 1, 2], "type": "line", "name": "Like"},
+                    {
+                        "x": [1, 2, 3],
+                        "y": [2, 4, results_from_db.iloc[-1,-1]],
+                        "type": "$F_1$ Example",
+                        "name": "Accuracy",
+                    },
+                ],
+                "layout": {"title": "Performance Metrics of Model Training over Recent Training Runs"},
             },
         ),
     ]
