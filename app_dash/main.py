@@ -51,11 +51,11 @@ dash_app.layout = html.Div(
             id="example-graph_2",
             figure={
                 "data": [
-                    {"x": [1, 2, 3], "y": [4, 1, 2], "type": "line", "name": "Like"},
+                    {"x": [1, 2, 3], "y": [4, 1, 2], "type": "line", "name": "$F_1$ Example"},
                     {
                         "x": [1, 2, 3],
                         "y": [2, 4, results_from_db.iloc[-1,-1]],
-                        "type": "$F_1$ Example",
+                        "type": "line",
                         "name": "Accuracy",
                     },
                 ],
