@@ -1,3 +1,6 @@
+# Todo: Clean up imports
+# Todo: Clean up file
+
 import numpy as np # linear algebra
 import pandas as pd # data processing
 #import tensorflow as tf
@@ -11,9 +14,15 @@ import pandas as pd # data processing
 # Classifier Libraries
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
-#from sklearn.neighbors import KNeighborsClassifier
-#from sklearn.tree import DecisionTreeClassifier
-#from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import *
 import collections
 
 # Other Libraries
@@ -88,6 +97,57 @@ def experiment():
     f1_log_reg = f1_score(y_val, y_pred_log_reg)
     f1_SVM = f1_score(y_val, y_pred_SVM)
 
+    #******************************************************************************************************
+
+    # Initialize the estimators
+    log_reg_maxiter = configurations.params["logreg_maxiter"]
+
+    clf1 = SVC()
+    clf2 = LogisticRegression(max_iter = log_reg_maxiter)
+    clf3 = KNeighborsClassifier()
+    clf4 = GradientBoostingClassifier()
+
+    # Initialize hyperparameters for each dictionary
+
+    param1 = {}
+    param1['classifier__C'] = [10**-2, 10**-1, 10**0, 10**1, 10**2]
+    param1['classifier__kernel'] = ['rbf', 'poly', 'sigmoid', 'linear']
+    #param1['classifier__class_weight'] = [None, {0:1,1:5}, {0:1,1:10}, {0:1,1:25}]
+    param1['classifier'] = [clf1]
+
+    param2 = {}
+    param2['classifier__C'] = [10**-2, 10**-1, 10**0, 10**1, 10**2]
+    param2['classifier__penalty'] = ['l1', 'l2']
+    #param2['classifier__class_weight'] = [None, {0:1,1:5}, {0:1,1:10}, {0:1,1:25}]
+    param2['classifier'] = [clf2]
+
+    param3 = {}
+    param3['classifier__n_neighbors'] = [2,5,10,25,50]
+    param3['classifier'] = [clf3]
+
+    param4 = {}
+    param4['classifier__n_estimators'] = [10, 50, 100, 250]
+    param4['classifier__max_depth'] = [5, 10, 20]
+    param4['classifier'] = [clf4]
+
+
+
+    pipeline = Pipeline([('classifier', clf1)])
+    params = [param1, param2, param3, param4]
+
+    # Train the grid search model
+    gs = GridSearchCV(pipeline, params, cv=5, n_jobs=-1, scoring='recall').fit(X,y)
+    print(gs.best_params_)
+
+    # Predict Y
+    y_pred= gs.best_estimator_.predict(X_val)
+
+    # Calculate recall
+    recall_val = recall_score(y_val, y_pred)
+    print("Recall validation result:" + str(recall_val))
+
+    #******************************************************************************************************
+
     now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     log_reg_results = pd.DataFrame([[
@@ -119,8 +179,36 @@ def experiment():
             'best_parameters',
             'f1_score'])
 
-    results = pd.concat([log_reg_results,svc_results])
-    results.name = 'results'
+    results2 = pd.concat([log_reg_results,svc_results])
+    results2.name = 'results2'
 
+    save_files([results2])
+
+    #******************************************************************************************************
+    #Creation of results table 
+    results = pd.DataFrame([[
+        now,
+        gs.best_params_['classifier'],
+        recall_val
+        ]],
+        columns = [
+            'experiment_date',
+            'best_estimator',
+            'recall_score'])
+    
+    results.name = 'results'
     save_files([results])
+
+    #Creation of the target prediction table for metrics calculation
+    y_pred_series = pd.Series(y_pred)
+
+    target_prediction = pd.concat([y_val.reset_index(),y_pred_series], axis = 1, ignore_index=True)
+    target_prediction[0] = now
+    target_prediction.columns = [
+        'experiment_date',
+        'actual_class',
+        'predicted_class']
+
+    target_prediction.name = 'target_prediction'
+    save_files([target_prediction])
     
