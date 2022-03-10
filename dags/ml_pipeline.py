@@ -44,6 +44,13 @@ with DAG(
             postgres_conn_id='postgres_default',
             sql='sql/create_raw_data_table.sql'
         )
+        # task: 1.3
+        creating_target_prediction_table = PostgresOperator(
+            task_id="creating_target_prediction_table",
+            postgres_conn_id='postgres_default',
+            sql='sql/create_target_prediction_table.sql'
+        )
+    
     
     # task: 2
     fetching_data = PythonOperator(
