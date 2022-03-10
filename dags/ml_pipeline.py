@@ -102,9 +102,19 @@ with DAG(
     )
 
     # task: 8
-    saving_result_data = PythonOperator(
-        task_id = 'saving_result_data',
-        python_callable = save_results_data
+    with TaskGroup('experiment_csv_to_db') as experiment_csv_to_db:
+
+        # task: 8.1
+        saving_result_data = PythonOperator(
+            task_id = 'saving_result_data',
+            python_callable = save_results_data
+        )
+
+        # task: 8.2
+        saving_target_prediction_data= PostgresOperator(
+        task_id="saving_target_prediction_data",
+        postgres_conn_id='postgres_default',
+        sql='sql/copy_target_prediction_to_db.sql'
     )
 
-    creating_storage_structures >> fetching_data >> prepare_raw_data >> saving_raw_data >> scaling >> splitting >> undersampling >> experimenting >> saving_result_data
+    creating_storage_structures >> fetching_data >> prepare_raw_data >> saving_raw_data >> scaling >> splitting >> undersampling >> experimenting >> experiment_csv_to_db

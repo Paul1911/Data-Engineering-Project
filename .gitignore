@@ -3,6 +3,7 @@
 /models
 #*.ipynb
 *.pkl
+*.pyc
 
 # copied from https://github.com/github/gitignore/blob/main/Python.gitignore
 
