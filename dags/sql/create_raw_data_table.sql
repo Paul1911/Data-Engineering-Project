@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS raw_data (
     transaction_id SERIAL PRIMARY KEY,
-    transaction_time NUMERIC NOT NULL,
+    Time NUMERIC NOT NULL,
     V1 NUMERIC NOT NULL,
     V2 NUMERIC NOT NULL,
     V3 NUMERIC NOT NULL,
