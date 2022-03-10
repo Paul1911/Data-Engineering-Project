@@ -2,6 +2,7 @@
 /data
 /models
 #*.ipynb
+*.pkl
 
 # copied from https://github.com/github/gitignore/blob/main/Python.gitignore
 
