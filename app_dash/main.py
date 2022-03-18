@@ -3,8 +3,8 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 import flask
+from sklearn import metrics 
 
-# start own
 import pandas as pd
 from sqlalchemy import create_engine
 import ml_pipeline_config_test as configurations #todo: find a better solution instead of this dupe file 
@@ -13,13 +13,39 @@ db_engine = configurations.params["db_engine"]
 db_schema = configurations.params["db_schema"]
 table_raw = configurations.params["db_raw_table"] 
 table_results = configurations.params["db_results_table"]
+table_target_prediction = configurations.params["db_target_prediction_table"] 
 
 engine = create_engine(db_engine)
 results_from_db = pd.read_sql_table('results', con = engine)
-#results_from_db.to_csv('/app/results_from_db.csv', sep=',', index=False)
+target_prediction_from_db = pd.read_sql_table('target_prediction', con = engine)
+
+#Metric calculations
+exp_date = [event for event in target_prediction_from_db['experiment_date'].unique()]
+#exp_date = [date for date in target_prediction_from_db['experiment_date'].unique()]
+recall = []
+precision = []
+accuracy = []
+roc_auc = []
+
+for timestamp in target_prediction_from_db['experiment_date'].unique():
+    df = target_prediction_from_db[target_prediction_from_db['experiment_date'] == timestamp ]
+    df = df.astype({'actual_class': int, 'predicted_class': int})
+    print(df.dtypes)
+    print(df.head())
+    #recall
+    recall_df = metrics.recall_score(df['actual_class'],df['predicted_class'])
+    recall.append(recall_df)
+    #precision
+    precision_df = metrics.precision_score(df['actual_class'],df['predicted_class'])
+    precision.append(precision_df)
+    #accuracy
+    accuracy_df = metrics.accuracy_score(df['actual_class'],df['predicted_class'])
+    accuracy.append(accuracy_df)
+    #roc_auc
+    roc_auc_df = metrics.roc_auc_score(df['actual_class'],df['predicted_class'])
+    roc_auc.append(roc_auc_df)
 
 
-#end own
 
 
 app= flask.Flask(__name__)
@@ -31,7 +57,9 @@ dash_app.config.suppress_callback_exceptions = True
 dash_app.layout = html.Div(
     children=[
         html.H1(children="Model Training Monitor"),
-        html.Div(children="""Displaying the PostgreSQL-data in a DASH WebApp"""),
+        html.H2(children="Raw Data Quality Montitoring"),
+        html.H2(children="Model Result Montitoring"),
+        html.Div(children="""Displaying the PostgreSQL-data in a Dash WebApp"""),
         dcc.Graph(
             id="example-graph",
             figure={
@@ -48,16 +76,12 @@ dash_app.layout = html.Div(
             },
         ),
         dcc.Graph(
-            id="example-graph_2",
+            id="model_metrics",
             figure={
                 "data": [
-                    {"x": [1, 2, 3], "y": [4, 1, 2], "type": "line", "name": "$F_1$ Example"},
-                    {
-                        "x": [1, 2, 3],
-                        "y": [2, 4, results_from_db.iloc[-1,-1]],
-                        "type": "line",
-                        "name": "Accuracy",
-                    },
+                    {"x": exp_date, "y": recall, "type": "line", "name": "Recall"},
+                    {"x": exp_date, "y": precision, "type": "line", "name": "Precision"},
+                    {"x": exp_date, "y": accuracy, "type": "line", "name": "Accuracy"},
                 ],
                 "layout": {"title": "Performance Metrics of Model Training over Recent Training Runs"},
             },
