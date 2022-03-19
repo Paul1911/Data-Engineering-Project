@@ -16,36 +16,6 @@ table_results = configurations.params["db_results_table"]
 table_target_prediction = configurations.params["db_target_prediction_table"] 
 
 engine = create_engine(db_engine)
-results_from_db = pd.read_sql_table('results', con = engine)
-target_prediction_from_db = pd.read_sql_table('target_prediction', con = engine)
-
-#Metric calculations
-exp_date = [event for event in target_prediction_from_db['experiment_date'].unique()]
-#exp_date = [date for date in target_prediction_from_db['experiment_date'].unique()]
-recall = []
-precision = []
-accuracy = []
-roc_auc = []
-
-for timestamp in target_prediction_from_db['experiment_date'].unique():
-    df = target_prediction_from_db[target_prediction_from_db['experiment_date'] == timestamp ]
-    df = df.astype({'actual_class': int, 'predicted_class': int})
-    print(df.dtypes)
-    print(df.head())
-    #recall
-    recall_df = metrics.recall_score(df['actual_class'],df['predicted_class'])
-    recall.append(recall_df)
-    #precision
-    precision_df = metrics.precision_score(df['actual_class'],df['predicted_class'])
-    precision.append(precision_df)
-    #accuracy
-    accuracy_df = metrics.accuracy_score(df['actual_class'],df['predicted_class'])
-    accuracy.append(accuracy_df)
-    #roc_auc
-    roc_auc_df = metrics.roc_auc_score(df['actual_class'],df['predicted_class'])
-    roc_auc.append(roc_auc_df)
-
-
 
 
 app= flask.Flask(__name__)
@@ -54,7 +24,37 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 dash_app = dash.Dash(__name__, server=app, external_stylesheets=external_stylesheets)
 dash_app.config.suppress_callback_exceptions = True
 
-dash_app.layout = html.Div(
+#function approach 
+def serve_layout():
+    #Read tables
+    results_from_db = pd.read_sql_table('results', con = engine)
+    target_prediction_from_db = pd.read_sql_table('target_prediction', con = engine)
+
+    #Metric calculations
+    exp_date = [event for event in target_prediction_from_db['experiment_date'].unique()]
+    recall = []
+    precision = []
+    accuracy = []
+
+    #def metric_calculations():
+    for timestamp in target_prediction_from_db['experiment_date'].unique():
+        df = target_prediction_from_db[target_prediction_from_db['experiment_date'] == timestamp ]
+        df = df.astype({'actual_class': int, 'predicted_class': int})
+        print(df.dtypes)
+        print(df.head())
+        #recall
+        recall_df = metrics.recall_score(df['actual_class'],df['predicted_class'])
+        recall.append(recall_df)
+        #precision
+        precision_df = metrics.precision_score(df['actual_class'],df['predicted_class'])
+        precision.append(precision_df)
+        #accuracy
+        accuracy_df = metrics.accuracy_score(df['actual_class'],df['predicted_class'])
+        accuracy.append(accuracy_df)
+
+
+    return html.Div(
+#dash_app.layout = html.Div( #traditional approach
     children=[
         html.H1(children="Model Training Monitor"),
         html.H2(children="Raw Data Quality Montitoring"),
@@ -89,6 +89,53 @@ dash_app.layout = html.Div(
     ]
 )
 
+#function approach
+dash_app.layout = serve_layout
+
+""" @dash_app.callback(dash.dependencies.Output('model_metrics', 'figure'),
+#    [dash.dependencies.Input('refresh_data', 'n_clicks')])
+    [dash.dependencies.Input('interval-component', 'n_intervals')])
+
+def update_model_metrics():
+    target_prediction_from_db = pd.read_sql_table('target_prediction', con = engine)
+
+    #Metric calculations
+    exp_date = [event for event in target_prediction_from_db['experiment_date'].unique()]
+    recall = []
+    precision = []
+    accuracy = []
+    roc_auc = []
+
+    for timestamp in target_prediction_from_db['experiment_date'].unique():
+        df = target_prediction_from_db[target_prediction_from_db['experiment_date'] == timestamp ]
+        df = df.astype({'actual_class': int, 'predicted_class': int})
+        print(df.dtypes)
+        print(df.head())
+        #recall
+        recall_df = metrics.recall_score(df['actual_class'],df['predicted_class'])
+        recall.append(recall_df)
+        #precision
+        precision_df = metrics.precision_score(df['actual_class'],df['predicted_class'])
+        precision.append(precision_df)
+        #accuracy
+        accuracy_df = metrics.accuracy_score(df['actual_class'],df['predicted_class'])
+        accuracy.append(accuracy_df)
+        #roc_auc
+        roc_auc_df = metrics.roc_auc_score(df['actual_class'],df['predicted_class'])
+        roc_auc.append(roc_auc_df)
+
+        #Create Figure
+        figure={
+                "data": [
+                    {"x": exp_date, "y": recall, "type": "line", "name": "Recall"},
+                    {"x": exp_date, "y": precision, "type": "line", "name": "Precision"},
+                    {"x": exp_date, "y": accuracy, "type": "line", "name": "Accuracy"},
+                ],
+                "layout": {"title": "Performance Metrics of Model Training over Recent Training Runs"},
+            },
+
+        # Create plotly figure
+    return figure """
 
 
 if __name__ == '__main__':
