@@ -11,7 +11,7 @@ table_results = configurations.params["db_results_table"]
 
 now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-def save_raw_data():
+def prepare_raw_data():
     df = load_files(['df'])[0]
     df_raw = df
     df_raw["datetime_write_query"] = now

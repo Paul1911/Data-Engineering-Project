@@ -8,7 +8,7 @@ from datetime import datetime
 
 from helpfiles.experiment import experiment
 from helpfiles.import_data import load_data
-from helpfiles.postgres_save import save_raw_data, save_results_data
+from helpfiles.postgres_save import prepare_raw_data, save_results_data
 from helpfiles.scaling import scale_data
 from helpfiles.subsampling import undersample_data
 from helpfiles.train_val_split import split_data_train_val
@@ -62,7 +62,7 @@ with DAG(
     # task: 3.1
     prepare_raw_data = PythonOperator(
         task_id = 'prepare_raw_data',
-        python_callable = save_raw_data #todo: adjust name to reflect function correctly
+        python_callable = prepare_raw_data #todo: adjust name to reflect function correctly
     )
 
     # task: 3.2 which is task 3 new with copy
@@ -114,7 +114,7 @@ with DAG(
 
     # Old workflow, can be reinstated when parallel processing of SQL CREATE TABLE statements is available 
     #creating_storage_structures >> fetching_data >> prepare_raw_data >> saving_raw_data >> scaling >> splitting >> undersampling >> experimenting >> experiment_csv_to_db
-    #New
+    # New workflow
     creating_experiment_tracking_table >> creating_batch_data_table >> creating_target_prediction_table >> fetching_data >> prepare_raw_data >> saving_raw_data >> scaling >> splitting >> undersampling >> experimenting >> experiment_csv_to_db
 
     #creating_experiment_tracking_table >> creating_batch_data_table >> creating_target_prediction_table >> fetching_data >> prepare_raw_data >> scaling >> splitting >> undersampling >> experimenting >> experiment_csv_to_db
