@@ -62,7 +62,7 @@ with DAG(
     # task: 3.1
     prepare_raw_data = PythonOperator(
         task_id = 'prepare_raw_data',
-        python_callable = prepare_raw_data #todo: adjust name to reflect function correctly
+        python_callable = prepare_raw_data
     )
 
     # task: 3.2 which is task 3 new with copy
