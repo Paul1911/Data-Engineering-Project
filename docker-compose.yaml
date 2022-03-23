@@ -203,8 +203,9 @@ services:
     ports: 
       - 80:80
     volumes:
-      - ./data:/app #todo: check whether this is needed
+      - ./data:/app/data #todo: check whether this is needed
       - ./app_dash:/app
+      - ./dags/helpfiles:/app/helpfiles
     depends_on:
       postgres:
         condition: service_healthy
