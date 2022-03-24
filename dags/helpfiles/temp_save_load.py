@@ -21,4 +21,3 @@ def load_files(names_list):
     #[ df_list.append(pd.read_parquet("/opt/airflow/data/" + name + ".parquet")) for name in names_list if os.path.isfile('/opt/airflow/data/' + name + '.parquet') ]
     [ df_list.append(pd.read_csv("/opt/airflow/data/" + name + ".csv")) for name in names_list if os.path.isfile('/opt/airflow/data/' + name + '.csv') ]
     return df_list
-# Todo: Check whether temp saving as .csv is ok. Bare in mind that to_csv overwrites file names, which you definitely need!

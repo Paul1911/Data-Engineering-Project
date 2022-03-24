@@ -13,7 +13,7 @@ def split_data_train_val():
     X = df.drop('Class', axis=1)
     y = df['Class']
 
-    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2) #todo: add configurations here
+    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=split_ratio) #todo: add configurations here
 
     # Dataframe is concatenated again as the full dataset is needed and split again during cross validation. _val dataframes are needed for the final evaluation. 
     df = pd.concat([X_train, y_train],axis = 1)
