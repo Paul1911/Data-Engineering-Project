@@ -1,5 +1,4 @@
 import dash
-import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 import flask
@@ -7,7 +6,7 @@ from sklearn import metrics
 
 import pandas as pd
 from sqlalchemy import create_engine
-import helpfiles.ml_pipeline_config as configurations #todo: find a better solution instead of this dupe file 
+import helpfiles.ml_pipeline_config as configurations 
 
 db_engine = configurations.params["db_engine"]
 db_schema = configurations.params["db_schema"]
@@ -66,43 +65,9 @@ def serve_layout():
     return html.Div(
     children=[
         html.H1(children="Model Training Monitor"),
-        #html.H2(children="Raw Data Quality Montitoring"),
-        html.Div(children="""Displaying the PostgreSQL-data in a Dash WebApp"""),
         #Start of the raw data visualization
-        #html.Div([
-        #    dcc.Graph(
-        #        id="raw_data_viz",
-        #        figure={
-        #            "data": [
-        #                {"x": [1, 2, 3], "y": [4, 15, 2], "type": "bar", "name": "Like"},
-        #                {
-        #                    "x": [1, 2, 3],
-        #                    "y": [2, 4, 5],
-        #                    "type": "bar",
-        #                    "name": "Comment",
-        #                },
-        #            ],
-        #            "layout": {"title": "Like Vs Comment Dash Visualization"},
-        #        },
-        #        className='six columns', #to display both graphs in one column
-        #    ),
-        #    dcc.Graph(
-        #        id="raw_data_viz2",
-        #        figure={
-        #            "data": [
-        #                {"x": [1, 2, 3], "y": [4, 15, 2], "type": "bar", "name": "Like"},
-        #                {
-        #                    "x": [1, 2, 3],
-        #                    "y": [2, 4, 5],
-        #                    "type": "bar",
-        #                    "name": "Comment",
-        #                },
-        #            ],
-        #            "layout": {"title": "Like Vs Comment Dash Visualization"},
-        #        },
-        #        className='six columns',
-        #    ),
-        #]),''',
+        
+        #Model Result Monitoring
         html.H2(children="Model Result Montitoring"),
         dcc.Graph(
             id="model_metrics",
