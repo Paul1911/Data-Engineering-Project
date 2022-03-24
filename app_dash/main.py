@@ -7,7 +7,7 @@ from sklearn import metrics
 
 import pandas as pd
 from sqlalchemy import create_engine
-import ml_pipeline_config_test as configurations #todo: find a better solution instead of this dupe file 
+import helpfiles.ml_pipeline_config as configurations #todo: find a better solution instead of this dupe file 
 
 db_engine = configurations.params["db_engine"]
 db_schema = configurations.params["db_schema"]
@@ -20,11 +20,10 @@ engine = create_engine(db_engine)
 
 app= flask.Flask(__name__)
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-#dash_app = dash.Dash(__name__, server=app, external_stylesheets=[dbc.themes.BOOTSTRAP])
 dash_app = dash.Dash(__name__, server=app, external_stylesheets=external_stylesheets)
 dash_app.config.suppress_callback_exceptions = True
 
-#function approach 
+#we define this intermediate function to allow for data updates by refreshing. Otherwise, the SQL-Query would not be refreshed. 
 def serve_layout():
     #Read tables
     #raw_data_from_db = pd.read_sql_table('raw_data', con = engine, columns = ['Class']) 
@@ -53,8 +52,6 @@ def serve_layout():
     for timestamp in target_prediction_from_db['experiment_date'].unique():
         df = target_prediction_from_db[target_prediction_from_db['experiment_date'] == timestamp ]
         df = df.astype({'actual_class': int, 'predicted_class': int})
-        print(df.dtypes)
-        print(df.head())
         #recall
         recall_df = metrics.recall_score(df['actual_class'],df['predicted_class'])
         recall.append(recall_df)
