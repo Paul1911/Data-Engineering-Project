@@ -1,7 +1,7 @@
 /logs
 /data
 /models
-#*.ipynb
+*.ipynb
 *.pkl
 *.pyc
 
