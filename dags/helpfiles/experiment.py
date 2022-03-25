@@ -62,7 +62,8 @@ def experiment():
 
     param4 = {}
     param4['classifier__n_estimators'] = [10, 50, 100, 250]
-    param4['classifier__max_depth'] = [5, 10, 20]
+    #param4['classifier__max_depth'] = [6, 8, 10, 12, 14, 16]
+    param4['classifier__max_leaf_nodes'] = [6, 8, 10, 12, 14, 16]
     param4['classifier'] = [clf4]
 
     pipeline = Pipeline([('classifier', clf1)])
