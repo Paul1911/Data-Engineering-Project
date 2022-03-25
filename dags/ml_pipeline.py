@@ -12,12 +12,12 @@ from helpfiles.postgres_save import prepare_raw_data, save_results_data
 from helpfiles.scaling import scale_data
 from helpfiles.subsampling import undersample_data
 from helpfiles.train_val_split import split_data_train_val
-# from helpfiles.validity_checks import something
+from helpfiles.fit_best_model import fit_export_best_model
 
 default_args= {
     'owner': 'Paul Friedrich',
     'email_on_failure': False,
-    'email': ['paul.friedrich@iubh.de'],
+    'email': ['here_could_be_your_advertisement@cheap-rates.com'],
     'start_date': datetime(2022, 2, 13)
 }
 
@@ -29,7 +29,7 @@ with DAG(
     catchup=False) as dag:
 
     # task: 1
-    #with TaskGroup('creating_storage_structures') as creating_storage_structures:
+    # with TaskGroup('creating_storage_structures') as creating_storage_structures:
 
     # Parallel creation statements for tables can throw errors in PostgreSQL, therefore it has to be done sequentially for the time being
     # task: 1.1
@@ -97,7 +97,7 @@ with DAG(
     )
 
     # task: 8
-    with TaskGroup('experiment_csv_to_db') as experiment_csv_to_db:
+    with TaskGroup('exp_csv_to_db_pkl_export') as exp_csv_to_db_pkl_export:
 
         # task: 8.1
         saving_result_data = PythonOperator(
@@ -110,11 +110,15 @@ with DAG(
         task_id="saving_target_prediction_data",
         postgres_conn_id='postgres_default',
         sql='sql/copy_target_prediction_to_db.sql'
-    )
+        )
+
+        # task: 8.3
+        fit_export_best_model = PythonOperator(
+            task_id = 'fit_export_best_model',
+            python_callable = fit_export_best_model
+        )
 
     # Old workflow, can be reinstated when parallel processing of SQL CREATE TABLE statements is available 
     #creating_storage_structures >> fetching_data >> prepare_raw_data >> saving_raw_data >> scaling >> splitting >> undersampling >> experimenting >> experiment_csv_to_db
     # New workflow
-    creating_experiment_tracking_table >> creating_batch_data_table >> creating_target_prediction_table >> fetching_data >> prepare_raw_data >> saving_raw_data >> scaling >> splitting >> undersampling >> experimenting >> experiment_csv_to_db
-
-    #creating_experiment_tracking_table >> creating_batch_data_table >> creating_target_prediction_table >> fetching_data >> prepare_raw_data >> scaling >> splitting >> undersampling >> experimenting >> experiment_csv_to_db
+    creating_experiment_tracking_table >> creating_batch_data_table >> creating_target_prediction_table >> fetching_data >> prepare_raw_data >> saving_raw_data >> scaling >> splitting >> undersampling >> experimenting >> exp_csv_to_db_pkl_export

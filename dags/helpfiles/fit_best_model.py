@@ -24,7 +24,8 @@ from helpfiles.temp_save_load import load_files
 import helpfiles.ml_pipeline_config as configurations
 
 def fit_export_best_model():
-    df_raw, results = load_files(['df_raw', 'results'])
+    df_raw, new_df, results = load_files(['df_raw', 'new_df', 'results'])
+    creditcard = pd.read_csv("/opt/airflow/data/creditcard.csv")
     df_raw = df_raw.drop(['datetime_write_query'], axis = 1)
     model = eval(results['best_estimator'].values[0])
 
@@ -35,10 +36,16 @@ def fit_export_best_model():
 
     pipe = Pipeline([('robustscaler', scaler),('model', model)])
 
-    pipe.fit(df_raw.drop(['Class'], axis = 1), df_raw['Class'])
+    #using the training data for model export
+    X = creditcard.drop('Class', axis=1)
+    y = creditcard['Class']
 
-    print(metrics.classification_report(df_raw['Class'], pipe.predict(df_raw)))
-    print("Attention: nice to know metrics, but its meaning is limited as we use the same data for training and testing")
+    #using the full dataset for model export
+    #Attention: This takes very long (1.5-2hrs with 4GB RAM) as we have such a large dataset
+    #X = df_raw.drop(['Class'], axis = 1)
+    #y = df_raw['Class']
+
+    pipe.fit(X,y)
 
     #save model
     now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
