@@ -4,7 +4,7 @@
 
 In this project, I developed a reliable, scalable and maintainable batch-processing data system, focussing on the data engineering architecture and setup. It uses Airflow to orchestrate a machine learning pipeline, which is executed automatically once a day, training, evaluating, fitting and outputting the best model it computes for today's received data.  
 For traceablitiy, the data of every run is persistently saved in a PostgreSQL database.  
-To assess the performance of today's model, the evaluation criterion are visualized over time using Dash. To ensure a clean environment and reproducibility, the project is set up using Docker container. 
+To assess the performance of today's model, the evaluation criteria are visualized over time using Dash. To ensure a clean environment and reproducibility, the project is set up using Docker container. 
 
 ![Dash Visualization](./Dash.JPG)
 (It should be noted that the model itself is not completely optimized as the focus of this project is data engineering)
@@ -30,6 +30,7 @@ To reproduce this project, follow these simple steps:
 Make sure to have at least 4GB of RAM available. If a task fails with return code Negsignal.SIGKILL, it is due to too little RAM available.  
 10. To view the performance of the model, go to localhost:80, which is the port Dash is mapped to. 
 
+The final models are outputted in /models, /data includes the datasets of the latest run as .csv. /dags/ml_pipeline.py is the file which creates the directed acyclic graph for Airflow while /dags/helpfiles includes all pipeline steps used in ml_pipeline.py. /app_dash contains all relevant data regarding the Dash visualization. 
 
 Airflow's webserver offers many possibilities of tracking your pipeline performance and status, check out the graph or Gantt chart!
 
