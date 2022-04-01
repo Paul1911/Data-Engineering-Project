@@ -11,14 +11,15 @@ To assess the performance of today's model, the evaluation criteria are visualiz
 
 To reproduce this project, follow these simple steps:
 
-1. Have Docker installed on your system  
-2. Navigate to the folder of this readme in your terminal   
-3. Initialize Airflow with the command "docker compose up airflow-init"  
-4. Once the initialization has fininished, enter "docker compose up" to actually start the project  
-5. Wait until all services except the Dash container are healthy - check with the command "docker ps" (Dash cannot be healthy at first startup as it does not find any data in the database)  
-6. Enter "localhost:8080" in your preferred browser (like you would enter a website) to open the Airflow GUI  
-7. Enter "airflow" as username and password  
-8. Go to Admin --> Connections --> Add a new record and enter the following:    
+1. Have Docker installed on your system
+2. Get the [dataset](https://www.kaggle.com/mlg-ulb/creditcardfraud) from kaggle and paste the creditcard.csv in the data directory 
+3. Navigate to the folder of this readme in your terminal   
+4. Initialize Airflow with the command "docker compose up airflow-init"  
+5. Once the initialization has fininished, enter "docker compose up" to actually start the project  
+6. Wait until all services except the Dash container are healthy - check with the command "docker ps" (Dash cannot be healthy at first startup as it does not find any data in the database)  
+7. Enter "localhost:8080" in your preferred browser (like you would enter a website) to open the Airflow GUI  
+8. Enter "airflow" as username and password  
+9. Go to Admin --> Connections --> Add a new record and enter the following:    
   Connection Id = postgres_default  
   Connection Type = Postgres  
   Host = postgres  
@@ -26,11 +27,11 @@ To reproduce this project, follow these simple steps:
   Login = airflow  
   Password = airflow  
   Then save connection
-9. Once this is done, you can go to DAGs, select ml_pipeline and then start the process on the top right. 
+10. Once this is done, you can go to DAGs, select ml_pipeline and then start the process on the top right. 
 Make sure to have at least 4GB of RAM available. If a task fails with return code Negsignal.SIGKILL, it is due to too little RAM available.  
-10. To view the performance of the model, go to localhost:80, which is the port Dash is mapped to. 
+11. To view the performance of the model, go to localhost:80, which is the port Dash is mapped to. 
 
-The final models are outputted in /models, /data includes the datasets of the latest run as .csv. /dags/ml_pipeline.py is the file which creates the directed acyclic graph for Airflow while /dags/helpfiles includes all pipeline steps used in ml_pipeline.py. /app_dash contains all relevant data regarding the Dash visualization. 
+The final models are outputted in /models (created in the process), /data includes the datasets of the latest run as .csv. /dags/ml_pipeline.py is the file which creates the directed acyclic graph for Airflow while /dags/helpfiles includes all pipeline steps used in ml_pipeline.py. /app_dash contains all relevant data regarding the Dash visualization. 
 
 Airflow's webserver offers many possibilities of tracking your pipeline performance and status, check out the graph or Gantt chart!
 
