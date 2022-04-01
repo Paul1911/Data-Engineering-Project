@@ -6,7 +6,7 @@ In this project, I developed a reliable, scalable and maintainable batch-process
 For traceablitiy, the data of every run is persistently saved in a PostgreSQL database.  
 To assess the performance of today's model, the evaluation criterion are visualized over time using Dash. To ensure a clean environment and reproducibility, the project is set up using Docker container. 
 
-![Dash Visualization](./Dash.jpg)
+![Dash Visualization](./Dash.JPG)
 (It should be noted that the model itself is not completely optimized as the focus of this project is data engineering)
 
 To reproduce this project, follow these simple steps:
