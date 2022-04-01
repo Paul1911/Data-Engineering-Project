@@ -36,14 +36,17 @@ def fit_export_best_model():
 
     pipe = Pipeline([('robustscaler', scaler),('model', model)])
 
-    #using the training data for model export
-    X = creditcard.drop('Class', axis=1)
-    y = creditcard['Class']
-
-    #using the full dataset for model export
-    #Attention: This takes very long (1.5-2hrs with 4GB RAM) as we have such a large dataset
-    #X = df_raw.drop(['Class'], axis = 1)
-    #y = df_raw['Class']
+    #Fork for reduced computation by using smaller dataset
+    reduced_dataset = configurations.params['reduced_dataset_fitting']
+    if reduced_dataset == False:
+        #using the full dataset for model export
+        #Attention: This takes very long (1.5-2hrs with 4GB RAM) as we have such a large dataset
+        X = df_raw.drop(['Class'], axis = 1)
+        y = df_raw['Class']
+    else:
+        #using the training data for model export
+        X = creditcard.drop('Class', axis=1)
+        y = creditcard['Class']
 
     pipe.fit(X,y)
 
