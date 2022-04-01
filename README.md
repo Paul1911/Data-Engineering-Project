@@ -2,7 +2,7 @@
 
 ![Architecture Diagram](./architecture.jpg)
 
-In this project, I developed a reliable, scalable and maintainable batch-processing data system, focussing on the data engineering architecture and setup. It uses Airflow to orchestrate a machine learning pipeline, which is executed automatically once a day, training, evaluating, fitting and outputting the best model it computes for today's received data.  
+In this project, I developed a reliable, scalable and maintainable batch-processing data system, focussing on the data engineering architecture and setup. It uses Airflow to orchestrate a machine learning pipeline, which is executed automatically once a day, training, evaluating, fitting and outputting the best model it computes for detecting [fradulent credit card transactions](https://www.kaggle.com/mlg-ulb/creditcardfraud) within today's batch of data.
 For traceablitiy, the data of every run is persistently saved in a PostgreSQL database.  
 To assess the performance of today's model, the evaluation criteria are visualized over time using Dash. To ensure a clean environment and reproducibility, the project is set up using Docker container. 
 
