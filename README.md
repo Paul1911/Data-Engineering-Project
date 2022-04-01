@@ -7,7 +7,7 @@ For traceablitiy, the data of every run is persistently saved in a PostgreSQL da
 To assess the performance of today's model, the evaluation criteria are visualized over time using Dash. To ensure a clean environment and reproducibility, the project is set up using Docker container. 
 
 ![Dash Visualization](./Dash.JPG)
-(It should be noted that the model itself is not completely optimized as the focus of this project is data engineering. Accuracy is just added for aesthetic reasons, its meaning is limited with such inbalanced dataset)
+(It should be noted that the model itself is not completely optimized as the focus of this project is data engineering. Accuracy is just added for aesthetic reasons, its meaning is limited with such inbalanced dataset.)
 
 To reproduce this project, follow these simple steps:
 
